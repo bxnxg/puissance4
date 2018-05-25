@@ -2,22 +2,27 @@
 var p4 = []; /* ou {} */
 var j;
 var compteur;
+var gagne = false;
 
 function changeJoueur(){
-	if(typeof j === 'undefined'){
-		j = 'j1';
-	}else{
-		if(j == 'j1'){
-			j = 'j2';
-		}else{
+	if(!gagne){
+		if(typeof j === 'undefined'){
 			j = 'j1';
+		}else{
+			if(j == 'j1'){
+				j = 'j2';
+			}else{
+				j = 'j1';
+			}
 		}
+		
+		$('.infos >span').removeClass('bold');
+		$('.infos .'+j).addClass('bold');
+		$('#puissance4').removeClass('j1 j2');
+		$('#puissance4').addClass(j);
+	}else{
+		$('.infos >span:not(.gagne)').html('<a href="index.html">Recommence une partie :)</a>');
 	}
-	
-	$('.infos >span').removeClass('bold');
-	$('.infos .'+j).addClass('bold');
-	$('#puissance4').removeClass('j1 j2');
-	$('#puissance4').addClass(j);
 }
 
 function placePion(zone){
@@ -54,8 +59,10 @@ function verificationGagne(rangId,zoneId,positionRecherche){
 	var changePosition = false;
 	
 	if(compteur >= 4){
-		console.log(j+' à Gagné !')
+		console.log(j+' à Gagné !');
+		$('.infos >span').removeClass('bold');
 		$('.infos .'+j).addClass('gagne');
+		gagne = true;
 		return false;
 	}
 	
