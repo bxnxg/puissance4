@@ -3,6 +3,8 @@ var p4 = []; /* ou {} */
 var j;
 var compteur;
 var gagne = false;
+var positioni;
+var positionii;
 
 function changeJoueur(){
 	if(!gagne){
@@ -39,7 +41,18 @@ function placePion(zone){
 				
 				/* verification démarrage */
 				compteur = 0;
-				verificationGagne(1,1,1);
+				
+				$.each(p4, function(i, p){
+					$.each(p4[i], function(ii, pp){
+						if(p4[i][ii] == j){
+							console.log(j+' - position p4['+i+']['+ii+']');
+							compteur = 0;
+							positioni = i;
+							positionii = ii;
+							verificationGagne(i,ii,1);
+						}
+					});
+				});
 				
 				changeJoueur();
 				return false;
@@ -54,19 +67,12 @@ function enregistrePosition(rangId,zoneId){
 }
 
 function verificationGagne(rangId,zoneId,positionRecherche){
-	console.log('check rang '+rangId+' - zone '+zoneId+' (position '+positionRecherche+')');
 	
 	var changePosition = false;
 	
-	if(compteur >= 4){
-		console.log(j+' à Gagné !');
-		$('.infos >span').removeClass('bold');
-		$('.infos .'+j).addClass('gagne');
-		gagne = true;
-		return false;
-	}
+	console.log('check rang '+rangId+' - zone '+zoneId+' (position '+positionRecherche+')');
 	
-	if((zoneId <= 6) && (rangId <= 7) && (positionRecherche <= 2)){
+	if((zoneId <= 6) && (rangId <= 7) && (positionRecherche <= 4)){
 		/* verifie si p4[rangId][zoneId] existe et p4[rangId][zoneId] == pion joeur */
 		if((rangId in p4) && (zoneId in p4[rangId]) && (p4[rangId][zoneId] == j)){
 			console.log('+1');
@@ -75,34 +81,66 @@ function verificationGagne(rangId,zoneId,positionRecherche){
 			console.log('0');
 			compteur = 0;
 		}
-	
-		/* case du dessous (row +1) */
-		if(positionRecherche == 1){
-			if(zoneId >= 6){
-				if(rangId >= 7){
+		
+		console.log('check trouve - compteur : '+compteur);
+		
+		if(compteur >= 4){
+			console.log(j+' à Gagné !');
+			$('.infos >span').removeClass('bold');
+			$('.infos .'+j).addClass('gagne');
+			gagne = true;
+			return false;
+		}
+
+		
+		if(compteur){
+			/* case du dessous (row +1) */
+			if(positionRecherche == 1){
+				if(zoneId >= 6){
 					positionRecherche++;
-					rangId = 1;
+					rangId = positioni;
+					zoneId = positionii;
+					compteur = 0;
+				}else{
+					zoneId++;
+				}
+			/* case de droite (column +1) */
+			}else if(positionRecherche == 2){
+				if(rangId >=7){
+					positionRecherche++;
+					rangId = positioni;
+					zoneId = positionii;
+					compteur = 0;
 				}else{
 					rangId++;
 				}
-				zoneId = 1;
-
-			}else{
-				zoneId++;
-			}
-		/* case de droite (column +1) */
-		}else if(positionRecherche == 2){
-			if(rangId >=7){
-				if(zoneId >= 6){
+			/* case latérale haut droit (column +1, ligne -1) */
+			}else if(positionRecherche == 3){
+				if((rangId >=7)||(zoneId < 1)){
 					positionRecherche++;
-					zoneId = 1;
+					rangId = positioni;
+					zoneId = positionii;
+					compteur = 0;
 				}else{
-					zoneId++
+					rangId++;
+					zoneId--;
 				}
-				rangId = 1;
-			}else{
-				rangId++;
+			/* case latérale bas droit (column +1, ligne +1) */
+			}else if(positionRecherche == 4){
+				if((rangId >=7)||(zoneId >= 6)){
+					positionRecherche++;
+					rangId = positioni;
+					zoneId = positionii;
+					compteur = 0;
+				}else{
+					rangId++;
+					zoneId++;
+				}
 			}
+		}else{
+			positionRecherche++;
+			rangId = positioni;
+			zoneId = positionii;
 		}
 		
 		verificationGagne(rangId,zoneId,positionRecherche);
